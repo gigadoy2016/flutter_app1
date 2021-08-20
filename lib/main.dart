@@ -32,23 +32,25 @@ class _MyHomePageState extends State<MyHomePage> {
 
   TextEditingController weightController = new TextEditingController();
 
-  void _calculate(){
+  void _calculate() {
     FlutterBlue flutterBlue = FlutterBlue.instance;
     // Start scanning
     flutterBlue.startScan(timeout: Duration(seconds: 1));
 
     // Listen to scan results
-    var subscription = flutterBlue.scanResults.listen((results) {
-        // do something with scan results
-        int count =0;
-        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-        for (ScanResult r in results) {
-          //print(count);
-          if('HCare Plus C49F' == r.device.name.trim()){
-            print('$count.   ${r.device.name} found! rssi: ${r.rssi}');  
-          }
-          count++;
+    var subscription = flutterBlue.scanResults.listen((results) async {
+      // do something with scan results
+      int count = 0;
+      print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+      for (ScanResult r in results) {
+        //print(count);
+        if ('HCare Plus C49F' == r.device.name.trim()) {
+          print('$count.   ${r.device.name} found! rssi: ${r.rssi}');
+          await r.device.connect();
+          print(" --------------------------------------- Connected");
         }
+        count++;
+      }
     });
     // Stop scanning
     flutterBlue.stopScan();
@@ -63,11 +65,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
     return Scaffold(
       appBar: AppBar(
-        
         title: Text(widget.title),
       ),
       body: Center(
-
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -90,7 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
               style: Theme.of(context).textTheme.headline4,
             ),
             TextFormField(
-              controller:weightController,
+              controller: weightController,
               decoration: const InputDecoration(
                 icon: Icon(Icons.person),
                 hintText: 'Kg.',
@@ -99,8 +99,8 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             TextButton(
               onPressed: () {
-                  _calculate();
-                  // Respond to button press
+                _calculate();
+                // Respond to button press
               },
               child: Text("TEXT BUTTON"),
             )
